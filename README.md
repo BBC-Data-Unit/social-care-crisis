@@ -17,7 +17,18 @@ The methodology for each set of stories is outlined in an associated briefing pa
 
 * [Data: Social Care in Crisis](https://docs.google.com/spreadsheets/d/11md8PJ-8FdRFxuiOvUq0Lte03n2y3XCWuTCC2cWeaEY/edit#gid=492937083) ([Excel export](https://github.com/BBC-Data-Unit/social-care-crisis/blob/main/Social%20care%20in%20crisis.xlsx))
 
+## Scripts
+
+* [Python notebook used to download, combine, filter, clean and export data on discharges](https://github.com/BBC-Data-Unit/social-care-crisis/blob/main/scripts/dischargesitreps_cleaning.ipynb)
+* [R notebook that generates the homepage for the story website](https://github.com/BBC-Data-Unit/social-care-crisis/blob/main/scripts/index.Rmd)
+* [R notebook that generates a 'template' page for each hospital trust](https://github.com/BBC-Data-Unit/social-care-crisis/blob/main/scripts/01templateHD.Rmd)
+* [R notebook that 'renders' that template into 120 different markdown files - one for each hospital trust](https://github.com/BBC-Data-Unit/social-care-crisis/blob/main/scripts/03render.Rmd)
+* [R notebook that renders those 120 markdown files as HTML versions](https://github.com/BBC-Data-Unit/social-care-crisis/blob/main/scripts/04renderhtml.Rmd)
+* [R notebook that cleans those HTML files and adds extra elements such as navigation, charts, etc.](https://github.com/BBC-Data-Unit/social-care-crisis/blob/main/scripts/05cleaning.Rmd)
+
 ## Partner usage
+
+Usage for the first story in July included:
 
 * All About Newtown: [Older people 'being let down' across Wales](https://allaboutnewtown.wales/story/older-people-across-wales-waiting-longer-for-social-care-assessments)
 * Caerphilly Observer: [Caerphilly: 34 people died waiting for council-arranged care packages](https://caerphilly.observer/news/1024883/34-people-died-waiting-for-council-arranged-care-packages/)
@@ -43,6 +54,9 @@ research reveals](https://news.stv.tv/scotland/uk-deaths-while-waiting-for-care-
 * Yahoo! News: [Social care: People dying while waiting for care as councils and carers 
 "have their hands tied"](https://uk.news.yahoo.com/social-care-people-dying-while-074556695.html?guccounter=1&guce_referrer=aHR0cHM6Ly93d3cuZ29vZ2xlLmNvbS8&guce_referrer_sig=AQAAAI6bm6CUefYkhdQHe6cA4n9qQ37FO_K-x8GW8VdZy9Z77AUjVxiPcUs05bihwzsSvYZRMZtOrgMgjxlHqsQ-Sq4kf4ZxoCpWa1j4s5BpaTgh0ZDAKct1a_tZnTYcQzMgeJtWnx_r49Jb3owmLl215BUbvyc65nJK9S2Gbwp7BD3S)
 
+Usage for the second story includes:
 
-
-### NHS: Woman waited nine months for hospital discharge
+* BBC North West: [Hospital discharges: Getting patients home has become a 'real challenge'](https://www.bbc.co.uk/news/uk-england-merseyside-67345936)
+* Ireland Live: [Number of patients who faced delayed discharge rose in September](https://www.ireland-live.ie/news/scotland/1342285/number-of-patients-who-faced-delayed-discharge-rose-in-september.html)
+* Northern Echo: [Durham and Darlington patients stuck in hospital unnecessarily](https://www.thenorthernecho.co.uk/news/23908453.durham-darlington-patients-stuck-hospital-unnecessarily/)
+* Planet Radio: [Study shows extent of hospital 'bed blocking' across North Yorkshire](https://planetradio.co.uk/hits-radio/north-yorkshire/news/concern-over-bed-blocking-figures-in-north-yorkshire-hospitals/)
