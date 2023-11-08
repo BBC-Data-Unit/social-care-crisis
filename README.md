@@ -35,7 +35,7 @@ The methodology for each set of stories is outlined in an associated briefing pa
 
 As well as the Python notebook to gather, combine and clean the data on discharges, R notebooks were used to create a bespoke analysis for 120 separate trusts, and publish that as a webpage with a page detailing the picture at each trust. The code for those notebooks is available in this repo at the links below.
 
-* [Python notebook used to download, combine, filter, clean and export data on discharges](https://github.com/BBC-Data-Unit/social-care-crisis/blob/main/scripts/dischargesitreps_cleaning.ipynb)
+* [Python notebook used to download, combine, filter, clean and export data on discharges](https://github.com/BBC-Data-Unit/social-care-crisis/blob/main/scripts/sitreps_cleaning.ipynb)
 * [R notebook that generates the homepage for the story website](https://github.com/BBC-Data-Unit/social-care-crisis/blob/main/scripts/index.Rmd)
 * [R notebook that generates a 'template' page for each hospital trust](https://github.com/BBC-Data-Unit/social-care-crisis/blob/main/scripts/01templateHD.Rmd)
 * [R notebook that 'renders' that template into 120 different markdown files - one for each hospital trust](https://github.com/BBC-Data-Unit/social-care-crisis/blob/main/scripts/03render.Rmd)
