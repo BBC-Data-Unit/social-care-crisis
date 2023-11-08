@@ -1,5 +1,7 @@
 # Social care in crisis
 
+![](https://ichef.bbci.co.uk/news/976/cpsprodpb/23ED/production/_130579190_lily4lookingatcamera-top.jpg.webp)
+
 In July and November 2023, The Shared Data Unit (SDU) looked at how delays for care assessments were contributing to patients remaining in hospital despite being classed as well enough to be discharged. 
 
 The first set of stories, in July, focused on [the scale of those dying - at least 1,300 people - waiting for a care package to start during the last financial year](https://www.bbc.co.uk/news/uk-wales-66260332).
