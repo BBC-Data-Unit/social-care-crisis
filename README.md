@@ -8,6 +8,20 @@ The second stories, In November, [looked at the large proportion of patients - a
 
 ## Methodology
 
+For the first set of stories we sent Freedom of Information requests to every local authority in the UK asking two sets of questions. In Northern Ireland, health and social care trusts handle care. 
+
+The first set asked authorities how many individual domiciliary care contracts had been handed back to the authority in 2021-22 and in 2022-23. We also asked for the reasons behind those hand-backs, though these were not handed over in a form that could be easily shared.
+
+The second set of questions asked councils to provide the median wait times for an initial care assessment and for a care package to start. We also asked them to provide the longest individual waits they had on record for both and whether any individuals had died waiting for a package to start.
+
+We also asked those same councils (and health boards in Northern Ireland) how long people waited on average for an initial care assessment over the past two financial years and how long they waited for a care package to start following the assessment.
+
+Only 83 out of the 211 authorities (39%) collected the data in a way that could be retrieved under the Freedom of Information Act. Most (59%) of replying authorities did not answer the questions fully but provided at least partial responses.
+
+For the second set of stories we compiled and analysed data from [NHS 'situation reports' (sitreps) that stated the numbers of patients discharged each day, and the numbers of patients who "no longer meet the criteria to reside" but who were still not discharged](https://www.england.nhs.uk/statistics/statistical-work-areas/discharge-delays-acute-data/). This involved writing Python code to fetch, combine, filter and clean 12 separate monthly datasets, before further analysis was conducted in spreadsheets and R. 
+
+The analysis then allowed us to identify trusts with particularly high or low rates of non-discharged patients, to look at regional patterns and change over time, and to conduct further reporting to find out more about those patterns.
+
 The methodology for each set of stories is outlined in an associated briefing pack or website. 
 
 * [Briefing pack: Social Care in Crisis](https://docs.google.com/document/d/1QvJ7k_eiLa7dZDor7HI6UXAevQ9Tfy9bEfVqCEFAHD8/edit) ([PDF copy](https://github.com/BBC-Data-Unit/social-care-crisis/blob/main/Social%20Care%20in%20Crisis.pdf))
@@ -18,6 +32,8 @@ The methodology for each set of stories is outlined in an associated briefing pa
 * [Data: Social Care in Crisis](https://docs.google.com/spreadsheets/d/11md8PJ-8FdRFxuiOvUq0Lte03n2y3XCWuTCC2cWeaEY/edit#gid=492937083) ([Excel export](https://github.com/BBC-Data-Unit/social-care-crisis/blob/main/Social%20care%20in%20crisis.xlsx))
 
 ## Scripts
+
+As well as the Python notebook to gather, combine and clean the data on discharges, R notebooks were used to create a bespoke analysis for 120 separate trusts, and publish that as a webpage with a page detailing the picture at each trust. The code for those notebooks is available in this repo at the links below.
 
 * [Python notebook used to download, combine, filter, clean and export data on discharges](https://github.com/BBC-Data-Unit/social-care-crisis/blob/main/scripts/dischargesitreps_cleaning.ipynb)
 * [R notebook that generates the homepage for the story website](https://github.com/BBC-Data-Unit/social-care-crisis/blob/main/scripts/index.Rmd)
