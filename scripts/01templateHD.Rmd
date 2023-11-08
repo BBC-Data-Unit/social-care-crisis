@@ -1,0 +1,302 @@
+---
+title: |
+  ![](https://raw.githubusercontent.com/sduiopc/test1/branch1/LNP%20Header-01.jpg){align=right width=40%}
+output: 
+  html_document:
+    includes:
+       in_header: analyticsscript.html
+    self_contained: false
+    lib_dir: site/libs
+
+params:
+  trust: "JAMES PAGET UNIVERSITY HOSPITALS NHS FOUNDATION TRUST"
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = F,
+                      warning = F,
+                      message = F)
+```
+
+```{r import libraries}
+library(tidyverse)
+library(DT)
+#install.packages('nombre')
+library(nombre)
+```
+
+```{r format trust name}
+#convert trust name to title case, then replace Nhs with NHS
+trustproper <- stringr::str_replace(stringr::str_to_title(params$trust),"Nhs","NHS")
+boldtrustproper <- paste0("**",trustproper,"**")
+```
+
+
+```{r import data}
+#we've published the Google Sheet as a CSV - this is the shared URL
+#csvurl <- "https://docs.google.com/spreadsheets/d/e/2PACX-1vSIT-KCJj4it0auzVs860dF1TGO03PXqb9vtW0LLei8vbA3nS7Ptog1TQUmAgmbeQ1o3liMuW4MEA-W/pub?gid=1583283928&single=true&output=csv"
+#When it was updated to May 2023 this is the updated URL
+#csvurl <- "https://docs.google.com/spreadsheets/d/e/2PACX-1vRA1Kq7AN-8jFTXKTSlGknktV9OBWVpHJqQ-Roipzr33nTCnTt_DKtm2I5Vw1-PWpBnstC1BGXvMPGZ/pub?gid=300228525&single=true&output=csv"
+#And when it was updated to July 2023 this was the URL
+csvurl <- "https://docs.google.com/spreadsheets/d/e/2PACX-1vTpim5tW10CI4Zopcq2RDbw8NhynxgWmq8bR6nVIzVG7S-3YFoq_XUeWeAA-c_u_wTBHxORx0lAXs_6/pub?gid=300228525&single=true&output=csv"
+
+#import from that URL
+df <- readr::read_csv(csvurl)
+```
+
+```{r filter out YEOVIL and ASHFORD}
+#create a filtered dataset for this trust
+noyeovil <- dplyr::filter(df, 
+                             org != "YEOVIL DISTRICT HOSPITAL NHS FOUNDATION TRUST") %>% dplyr::filter(org != "ASHFORD AND ST PETER'S HOSPITALS NHS FOUNDATION TRUST")
+
+#clean out 'THE '
+noyeovil$org <- gsub("THE ","",noyeovil$org)
+```
+
+```{r filter to date range}
+#store the date range - change these if you want a different date range
+dateafter <- "2022-06-30"
+datebefore <- "2023-07-01"
+#create a filtered dataset for this trust
+thisdaterange <- dplyr::filter(noyeovil, 
+                             date > dateafter) %>%
+  dplyr::filter(date < datebefore)
+```
+
+```{r filter to this trust}
+#use this to get the column names
+#colnames(df)
+#use this to get the values for the column to filter on
+#table(thistrustdf$measure)
+#create a filtered dataset for this trust
+thistrustdf <- dplyr::filter(thisdaterange, 
+                             org == params$trust)
+#filter to the rows about patients not being released
+thistrustdf_remPatients <- dplyr::filter(thistrustdf, 
+                                         measure == "Number of patients remaining in hospital who no longer meet the criteria to reside")
+
+#store this region too
+thisregion <- thistrustdf$region[1]
+```
+
+
+```{r extract mean % patients}
+#use this to summarise the results
+#summary(as.numeric(thistrustdf_remPatients$percof_nolongermeetcriteria))
+
+#convert the column to numeric
+thistrustdf_remPatients$percof_nolongermeetcriteria <- as.numeric(thistrustdf_remPatients$percof_nolongermeetcriteria)
+#this introduces NA by coercion (where it says 'no data')
+#we can now exclude the NA results
+thistrustdf_remPatients <- dplyr::filter(thistrustdf_remPatients,
+                                        !is.na(percof_nolongermeetcriteria))
+
+#extract the mean average of percof_nolongermeetcriteria for this filter (remaining patients)
+avg_percof_nolongermeetcriteria <- mean(thistrustdf_remPatients$percof_nolongermeetcriteria)
+#convert to a whole number by rounding to 3 decimal places then multiplying by 100
+avg_percof_nolongermeetcriteria <- round(avg_percof_nolongermeetcriteria, digits = 3)*100
+avg_percof_nlmc_formatted <- paste0("**",avg_percof_nolongermeetcriteria,"%**")
+```
+
+```{r difference from national average}
+#filter to rows that measure patients remaining, filter out those without data
+remainingonlydf <- dplyr::filter(df, measure == "Number of patients remaining in hospital who no longer meet the criteria to reside") %>% dplyr::filter(percof_nolongermeetcriteria != "no data")
+#calculate an overall average of that measure
+natavg <- mean(as.numeric(remainingonlydf$percof_nolongermeetcriteria))
+#convert to a string
+natavgstr <- paste0("**",round(natavg*100, digits = 1),"%**")
+
+#calculate difference from national average
+diff_from_natavg <- avg_percof_nolongermeetcriteria - natavg*100
+#store a string based on whether the difference is positive or negative
+if(diff_from_natavg > 0){
+  comparedtonat <- paste0("**",round(diff_from_natavg,1)," percentage points ","higher** than")
+} else if(diff_from_natavg < 0){
+  comparedtonat <- paste0("**",round(-diff_from_natavg,1)," percentage points ","lower** than")
+} else {comparedtonat <- "the same as"}
+
+
+```
+
+
+```{r worst days}
+#find out the maximum % of patients remaining at the end of the day
+maxnlmc <- max(thistrustdf_remPatients$percof_nolongermeetcriteria)
+#count how many days this happened
+countmaxnlmc <- sum(thistrustdf_remPatients$percof_nolongermeetcriteria == maxnlmc)
+#convert % to a figure
+maxnlmcfig <- round(maxnlmc, 3)*100
+maxnlmcstring <- paste0("**",maxnlmcfig,"%**")
+
+#if this is one day, then we need to use 'worst day', otherwise 'x days'
+if(countmaxnlmc > 1){
+  daystring <- paste0(countmaxnlmc," days")
+} else {
+  daystring <- "the worst day"
+}
+
+#if this is 100%, we need an extra string
+percofdays <- round(countmaxnlmc/nrow(thistrustdf_remPatients),2)*100
+if(maxnlmcfig == 100 && countmaxnlmc > 1){
+  nonedischargedstring <- paste0("This means that on ",percofdays,"% of days for which data was provided, not a single patient was discharged.")
+} else {
+  nonedischargedstring <- ""
+}
+```
+
+```{r worst day for totals}
+#find out the maximum number of patients remaining at the end of the day
+maxremain <- max(thistrustdf_remPatients$numberofpatients)
+#count how many days this happened
+countmaxremain <- sum(thistrustdf_remPatients$numberofpatients == maxremain)
+#convert to bold string
+maxremainstring <- paste0("**",maxremain,"**")
+
+#find out which date that happened on
+sqlquery <- paste("SELECT date
+             FROM thistrustdf_remPatients
+             WHERE numberofpatients = ",maxremain,"
+             ORDER BY numberofpatients DESC
+             LIMIT ",countmaxnlmc)
+
+#extract the result from that
+worstday <- sqldf::sqldf(sqlquery)[1,1]
+#format as a datetime string - %A gives us the full weekday
+# %e gives the day of the month as a number without a zero
+# %B gives the month as a full word
+# %Y gives the full year
+#see https://man7.org/linux/man-pages/man3/strftime.3.html for codes
+# %e adds a space instead of a zero so we replace the resulting double space if needed by nesting the format function within a str_replace
+worstdaystring <- stringr::str_replace(format(worstday, "%A %B %e %Y"),"  "," ")
+```
+
+```{r find out date range of data}
+#we insert the minimum and max dates into the string below.
+#https://stackoverflow.com/questions/25387160/formatting-a-date-in-r-without-leading-zeros
+firstday <- format(min(thistrustdf$date), "%B%e %Y")
+```
+
+
+
+```{r find out worst day}
+#count patients no longer meeting criteria by day
+pivottotals <- sqldf::sqldf("SELECT weekday, SUM(numberofpatients) AS nolongermeetcriteria
+             FROM thistrustdf
+             WHERE measure IS 'Number of patients who no longer meet the criteria to reside'
+             GROUP BY weekday, measure")
+
+#add a column of remaining in hospital
+pivotremain <- sqldf::sqldf("SELECT weekday, SUM(numberofpatients) AS remaining
+             FROM thistrustdf
+             WHERE measure IS 'Number of patients remaining in hospital who no longer meet the criteria to reside'
+             GROUP BY weekday, measure")
+
+#merge the two tables
+pivotboth <- merge(pivottotals, pivotremain)
+
+#calculate as a percentage
+pivotboth$asperc <- pivotboth$remaining/pivotboth$nolongermeetcriteria
+
+#sort from largest to smallest (note the minus before the df)
+pivotboth <- pivotboth[order(-pivotboth$asperc), ]
+
+#store worst day, including formatting
+worstday <- paste0("**",pivotboth[1,1],"s**")
+#store worst percentage, including formatting
+worstperc <- paste0("**",round((pivotboth[1,4])*100,1),"**")
+
+```
+
+```{r calculate headline proportion}
+if (avg_percof_nolongermeetcriteria>90){
+  headlineratio <- "more than 90% of"
+} else if (avg_percof_nolongermeetcriteria>80){
+  headlineratio <- "more than four in every five"
+} else if (avg_percof_nolongermeetcriteria>75){
+  headlineratio <- "over three quarters of"
+} else if (avg_percof_nolongermeetcriteria>73){
+  headlineratio <- "almost three quarters of"
+} else if (avg_percof_nolongermeetcriteria>66.6){
+  headlineratio <- "over two thirds of"
+} else if (avg_percof_nolongermeetcriteria>64){
+  headlineratio <- "almost two thirds of"
+} else if (avg_percof_nolongermeetcriteria>50){
+  headlineratio <- "over half of"
+} else if (avg_percof_nolongermeetcriteria>48){
+  headlineratio <- "almost half of"
+} else if (avg_percof_nolongermeetcriteria>40){
+  headlineratio <- "over 40% of"
+} else if (avg_percof_nolongermeetcriteria>33.3){
+  headlineratio <- "over a third of"
+} else if (avg_percof_nolongermeetcriteria>31){
+  headlineratio <- "almost a third of"
+} else if (avg_percof_nolongermeetcriteria>25){
+  headlineratio <- "over a quarter of"
+} else if (avg_percof_nolongermeetcriteria>23){
+  headlineratio <- "almost a quarter of"
+}
+```
+
+
+
+# Hospitals in `r boldtrustproper` unable to discharge `r headlineratio` patients 
+
+In `r boldtrustproper` between `r format(min(thistrustdf$date), "%B%e %Y")`
+and `r format(max(thistrustdf$date), "%B %d %Y")` on an average night `r avg_percof_nlmc_formatted` patients who had been identified as ready to be discharged that day were still occupying a bed at midnight.
+
+This is `r comparedtonat` the average figure for trusts across England (`r natavgstr`).
+
+On `r daystring` `r maxnlmcstring` of patients classed as "no longer meeting the criteria" to be in hospital were still occupying beds at midnight. `r nonedischargedstring`
+
+The day when the most patients were left in hospital was `r worstdaystring` when `r maxremainstring` who could have been discharged were still in the hospital at the end of the day.
+
+The proportion of patients ready to be discharged but still occupying beds was worst on `r worstday`, when `r worstperc`% of patients identified as ready to be discharged that day were still occupying a bed at midnight.
+
+
+## Explore trusts in this region
+
+```{r create df for table}
+#form a query, inserting the region for this trust
+tablequery <- paste0("SELECT org, ROUND(AVG(percof_nolongermeetcriteria),3)*100 AS average_perc_remainingwho_nolongermeetcriteria
+             FROM thisdaterange
+             WHERE measure == 'Number of patients remaining in hospital who no longer meet the criteria to reside' AND region == '",thisregion,"' AND percof_nolongermeetcriteria != 'no data'
+             GROUP BY org
+             ORDER BY AVG(percof_nolongermeetcriteria) DESC, 
+             org")
+
+#run that query
+df_for_table <-  sqldf::sqldf(tablequery)
+
+write.csv(df_for_table,"df_for_table.csv")
+```
+
+
+```{r calculate position in region}
+whichcell <- which(df_for_table == params$trust, arr.ind=TRUE)
+#this produces a list with two values, the first of which is our position
+#convert to an ordinal number - we select the first item with whichcell[1]
+whichcell_ord <- nombre::ordinal(whichcell[1], cardinal = F)
+#format as bold
+whichcell_ord <- paste0("**",whichcell_ord,"**")
+```
+
+
+`r boldtrustproper` is ranked `r whichcell_ord` in the `r stringr::str_to_title(thisregion)` region for the proportion of undischarged patients.
+
+```{r table}
+#rename columns 
+colnames(df_for_table) <- c("Trust","Percentage undischarged who no longer met criteria to reside")
+#Create the datatable. Add a caption if you want
+DT::datatable(df_for_table,
+             style = 'bootstrap',
+             caption = 'Discharges ', 
+             filter = 'top',
+             options = list(pageLength = 10, scrollX=TRUE,
+                             autoWidth = TRUE,
+                             order = list(2, 'desc') #order by col 2
+                              ), escape = F
+             )
+```
+
+*Data source: [NHS England: Discharge delays (Acute)](https://www.england.nhs.uk/statistics/statistical-work-areas/discharge-delays-acute-data/). National average does not include figures from Yeovil District Hospital Trust.*

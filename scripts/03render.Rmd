@@ -1,0 +1,56 @@
+---
+title: "03render"
+output: html_document
+date: "2023-07-05"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Rendering the markdown files
+
+Allow around 20 minutes for these files to be generated. 
+
+```{r import data and clean}
+#we've published the Google Sheet as a CSV - this is the shared URL
+#csvurl <- "https://docs.google.com/spreadsheets/d/e/2PACX-1vSIT-KCJj4it0auzVs860dF1TGO03PXqb9vtW0LLei8vbA3nS7Ptog1TQUmAgmbeQ1o3liMuW4MEA-W/pub?gid=1583283928&single=true&output=csv"
+#When it was updated to May 2023 this is the updated URL
+#csvurl <- "https://docs.google.com/spreadsheets/d/e/2PACX-1vRA1Kq7AN-8jFTXKTSlGknktV9OBWVpHJqQ-Roipzr33nTCnTt_DKtm2I5Vw1-PWpBnstC1BGXvMPGZ/pub?gid=300228525&single=true&output=csv"
+#And when it was updated to July 2023 this was the URL
+csvurl <- "https://docs.google.com/spreadsheets/d/e/2PACX-1vTpim5tW10CI4Zopcq2RDbw8NhynxgWmq8bR6nVIzVG7S-3YFoq_XUeWeAA-c_u_wTBHxORx0lAXs_6/pub?gid=300228525&single=true&output=csv"
+
+#import from that URL
+df <- readr::read_csv(csvurl)
+
+#filter out Yeovil and Ashford
+df <- dplyr::filter(df, 
+                             org != "YEOVIL DISTRICT HOSPITAL NHS FOUNDATION TRUST") %>% dplyr::filter(org != "ASHFORD AND ST PETER'S HOSPITALS NHS FOUNDATION TRUST")
+
+#clean out 'THE ' which also fixes a problem with Shrewsbury changing name partway through
+df$org <- gsub("THE ","",df$org)
+
+#create a list of orgs
+trusts <- unique(df$org)
+
+#double check there's only one Shrewsbury
+for (i in trusts) {
+  if (grepl("SHREWSBURY",i)){
+    print(i)
+  }
+}
+
+```
+
+This code will throw an error if the 'site' folder hasn't been created earlier by knitting the 01 template file. 
+
+```{r generate md files}
+#store the location of the template 
+paramsfile <- "01templateHD.Rmd"
+#loop through all regions 
+for (t in trusts) {
+  rmarkdown::render(paramsfile, params = list(trust = t), output_file = paste(sep="",'site/',stringr::str_replace_all(stringr::str_replace_all(t," ","-"),"'",""),'.md'),
+    envir = parent.frame())
+}
+```
+
