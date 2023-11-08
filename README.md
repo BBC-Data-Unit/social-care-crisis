@@ -10,7 +10,7 @@ The second stories, In November, [looked at the large proportion of patients - a
 
 ## Methodology
 
-For the first set of stories we sent Freedom of Information requests to every local authority in the UK asking two sets of questions. In Northern Ireland, health and social care trusts handle care. 
+For the first set of stories we sent [Freedom of Information requests](https://github.com/BBC-Data-Unit/social-care-crisis/blob/main/foirequests/foirequest2.md) to every local authority in the UK asking two sets of questions. In Northern Ireland, health and social care trusts handle care. 
 
 The first set asked authorities how many individual domiciliary care contracts had been handed back to the authority in 2021-22 and in 2022-23. We also asked for the reasons behind those hand-backs, though these were not handed over in a form that could be easily shared.
 
